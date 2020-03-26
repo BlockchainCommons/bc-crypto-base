@@ -1,0 +1,74 @@
+# @configure_input@
+
+# Package-specific substitution variables
+package = @PACKAGE_NAME@
+version = @PACKAGE_VERSION@
+tarname = @PACKAGE_TARNAME@
+libname = lib$(package).a
+
+# Prefix-specific substitution variables
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+
+# VPATH-specific substitution variables
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+CFLAGS = -g -O0
+ARFLAGS = rcs
+
+OBJS = memzero.o sha2.o hmac.o pbkdf2.o
+
+.PHONY: all
+all: $(libname) test
+
+$(libname): $(OBJS)
+	$(AR) $(ARFLAGS) $@ $^
+
+memzero.o: memzero.h
+sha2.o: sha2.h memzero.h
+hmac.o: hmac.h sha2.h memzero.h options.h
+pbkdf2.o: pbkdf2.h sha2.h hmac.h memzero.h sha2.h
+
+test: $(libname) test.c
+
+.PHONY: check
+check: all
+	./test
+	@echo "*** ALL TESTS PASSED ***"
+
+HEADERS = bc-crypto-base.h hmac.h memzero.h options.h pbkdf2.h sha2.h
+
+libdir = $(DESTDIR)/$(prefix)/lib
+includedir = $(DESTDIR)/$(prefix)/include/$(package)
+
+.PHONY: install
+install: $(libname)
+	install -d $(libdir)
+	install $(libname) $(libdir)
+	install -d $(includedir)
+	install $(HEADERS) $(includedir)
+
+.PHONY: uninstall
+uninstall:
+	rm -f $(libdir)/$(libname)
+	rm -f $(includedir)/bc-crypto-base.h
+	rm -f $(includedir)/hmac.h
+	rm -f $(includedir)/memzero.h
+	rm -f $(includedir)/options.h
+	rm -f $(includedir)/pbkdf2.h
+	rm -f $(includedir)/sha2.h
+	-rmdir $(libdir) >/dev/null 2>&1
+	-rmdir $(includedir) >/dev/null 2>&1
+
+.PHONY: clean
+clean:
+	rm -rf $(libname)
+	rm -f $(OBJS)
+	rm -f test
+	rm -rf *.dSYM
+
+.PHONY: distclean
+distclean: clean
+	rm -f Makefile

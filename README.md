@@ -4,6 +4,25 @@
 
 These are selected cryptographic functions used by various [Blockchain Commons](https://www.BlockchainCommons.com) software projects that have have been vetted by the developers as having been sufficiently well-reviewed and/or cryptographically audited by other parties, but also meet our specific needs (for instance to be able to run on embedded hardware).
 
+## Installation
+
+```bash
+$ ./configure
+$ make check
+$ sudo make install
+```
+
+This sequence runs the module's unit tests.
+
+## Use
+
+1. Link against `libbc_crypto_base.a`.
+2. Include the umbrella header in your code:
+
+```c
+#include <bc_crypto_base/bc_crypto_base.h>
+```
+
 ## Origin, Authors, Copyright & Licenses
 
 Unless otherwise noted (either in this [/README.md](./README.md) or in the file's header comments) the contents of this repository are Copyright © 2020 by Blockchain Commons, LLC, and are [licensed](./LICENSE) under the [spdx:BSD-2-Clause Plus Patent License](https://spdx.org/licenses/BSD-2-Clause-Patent.html).
