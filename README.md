@@ -20,7 +20,7 @@ This sequence runs the module's unit tests.
 2. Include the umbrella header in your code:
 
 ```c
-#include <bc_crypto_base/bc_crypto_base.h>
+#include <bc-crypto-base/bc-crypto-base.h>
 ```
 
 ## Origin, Authors, Copyright & Licenses
