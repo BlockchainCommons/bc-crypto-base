@@ -27,8 +27,8 @@ ARFLAGS = rcs
 
 OBJS = memzero.o sha2.o hmac.o pbkdf2.o
 
-.PHONY: all
-all: $(libname) test
+.PHONY: all lib
+all lib: $(libname)
 
 $(libname): $(OBJS)
 	$(AR) $(ARFLAGS) $@ $^
@@ -37,18 +37,6 @@ memzero.o: memzero.h
 sha2.o: sha2.h memzero.h
 hmac.o: hmac.h sha2.h memzero.h options.h
 pbkdf2.o: pbkdf2.h sha2.h hmac.h memzero.h sha2.h
-
-TEST_OBJS = test.o test-utils.o
-
-test: $(libname) $(TEST_OBJS)
-
-test.o: test-utils.h
-test-utils.o: test-utils.h
-
-.PHONY: check
-check: all
-	./test
-	@echo "*** ALL TESTS PASSED ***"
 
 HEADERS = bc-crypto-base.h hmac.h memzero.h options.h pbkdf2.h sha2.h
 
@@ -78,8 +66,6 @@ uninstall:
 clean:
 	rm -rf $(libname)
 	rm -f $(OBJS)
-	rm -f test $(TEST_OBJS)
-	rm -rf *.dSYM
 
 .PHONY: distclean
 distclean: clean
