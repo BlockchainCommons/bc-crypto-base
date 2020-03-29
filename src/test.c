@@ -12,7 +12,7 @@
 #include "bc-crypto-base.h"
 #include "test-utils.h"
 
-bool _test_sha(const char* input, const char* expected_output, size_t digest_length, void (*f)(const uint8_t*, size_t, uint8_t*)) {
+static bool _test_sha(const char* input, const char* expected_output, size_t digest_length, void (*f)(const uint8_t*, size_t, uint8_t*)) {
   bool pass = false;
   uint8_t output[digest_length];
   f((uint8_t *)input, strlen(input), output);
@@ -25,14 +25,14 @@ bool _test_sha(const char* input, const char* expected_output, size_t digest_len
 }
 
 // Test vectors: https://www.di-mgt.com.au/sha_testvectors.html
-void test_sha() {
+static void test_sha() {
   char* input = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
   assert(_test_sha(input, "84983e441c3bd26ebaae4aa1f95129e5e54670f1", SHA1_DIGEST_LENGTH, sha1_Raw));
   assert(_test_sha(input, "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1", SHA256_DIGEST_LENGTH, sha256_Raw));
   assert(_test_sha(input, "204a8fc6dda82f0a0ced7beb8e08a41657c16ef468b228a8279be331a703c33596fd15c13b1b07f9aa1d3bea57789ca031ad85c7a71dd70354ec631238ca3445", SHA512_DIGEST_LENGTH, sha512_Raw));
 }
 
-bool _test_hmac(const uint8_t* key_data, size_t key_len, const uint8_t* message_data, size_t message_len, const char* expected_output, size_t digest_length, void (*f)(const uint8_t*, const uint32_t, const uint8_t*, const uint32_t, uint8_t*)) {
+static bool _test_hmac(const uint8_t* key_data, size_t key_len, const uint8_t* message_data, size_t message_len, const char* expected_output, size_t digest_length, void (*f)(const uint8_t*, const uint32_t, const uint8_t*, const uint32_t, uint8_t*)) {
   bool pass = false;
 
   uint8_t output[digest_length];
@@ -47,12 +47,12 @@ bool _test_hmac(const uint8_t* key_data, size_t key_len, const uint8_t* message_
   return pass;
 }
 
-void _test_hmac_2(const uint8_t* key_data, size_t key_len, const uint8_t* message_data, size_t message_len, const char* expected_output_256, const char* expected_output_512) {
+static void _test_hmac_2(const uint8_t* key_data, size_t key_len, const uint8_t* message_data, size_t message_len, const char* expected_output_256, const char* expected_output_512) {
   assert(_test_hmac(key_data, key_len, message_data, message_len, expected_output_256, SHA256_DIGEST_LENGTH, hmac_sha256));
   assert(_test_hmac(key_data, key_len, message_data, message_len, expected_output_512, SHA512_DIGEST_LENGTH, hmac_sha512));
 }
 
-void _test_hmac_hex_string(const char* key, const char* message, const char* expected_output_256, const char* expected_output_512) {
+static void _test_hmac_hex_string(const char* key, const char* message, const char* expected_output_256, const char* expected_output_512) {
   uint8_t* key_data;
   size_t key_len = hex_to_data(key, &key_data);
 
@@ -64,7 +64,7 @@ void _test_hmac_hex_string(const char* key, const char* message, const char* exp
   free(key_data);
 }
 
-void _test_hmac_string_string(const char* key, const char* message, const char* expected_output_256, const char* expected_output_512) {
+static void _test_hmac_string_string(const char* key, const char* message, const char* expected_output_256, const char* expected_output_512) {
   uint8_t* key_data = (uint8_t*)key;
   size_t key_len = strlen(key);
 
@@ -74,7 +74,7 @@ void _test_hmac_string_string(const char* key, const char* message, const char* 
   _test_hmac_2(key_data, key_len, message_data, message_len, expected_output_256, expected_output_512);
 }
 
-void _test_hmac_hex_hex(const char* key, const char* message, const char* expected_output_256, const char* expected_output_512) {
+static void _test_hmac_hex_hex(const char* key, const char* message, const char* expected_output_256, const char* expected_output_512) {
   uint8_t* key_data;
   size_t key_len = hex_to_data(key, &key_data);
 
@@ -88,7 +88,7 @@ void _test_hmac_hex_hex(const char* key, const char* message, const char* expect
 }
 
 // Test vectors: https://tools.ietf.org/html/rfc4231
-void test_hmac() {
+static void test_hmac() {
   _test_hmac_hex_string(
     "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
     "Hi There",
@@ -132,7 +132,7 @@ void test_hmac() {
   );
 }
 
-void _test_pbkdf2_data(const uint8_t* password_data, size_t password_len, const uint8_t* salt_data, size_t salt_len, uint32_t iterations, size_t key_len, const char* expected_key) {
+static void _test_pbkdf2_data(const uint8_t* password_data, size_t password_len, const uint8_t* salt_data, size_t salt_len, uint32_t iterations, size_t key_len, const char* expected_key) {
   uint8_t* key_data = malloc(key_len);
   pbkdf2_hmac_sha256(password_data, password_len, salt_data, salt_len, iterations, key_data, key_len);
   char* key = data_to_hex(key_data, key_len);
@@ -140,7 +140,7 @@ void _test_pbkdf2_data(const uint8_t* password_data, size_t password_len, const 
   free(key);
 }
 
-void _test_pbkdf2(const char* password, const char* salt, uint32_t iterations, size_t key_len, const char* expected_key) {
+static void _test_pbkdf2(const char* password, const char* salt, uint32_t iterations, size_t key_len, const char* expected_key) {
   uint8_t* password_data = (uint8_t*)password;
   size_t password_len = strlen(password);
   uint8_t* salt_data = (uint8_t*)salt;
@@ -149,7 +149,7 @@ void _test_pbkdf2(const char* password, const char* salt, uint32_t iterations, s
 }
 
 // Test vectors: https://stackoverflow.com/questions/5130513/pbkdf2-hmac-sha2-test-vectors
-void test_pbkdf2() {
+static void test_pbkdf2() {
   _test_pbkdf2("password", "salt", 1, 32, "120fb6cffcf8b32c43e7225256c4f837a86548c92ccc35480805987cb70be17b");
   _test_pbkdf2("password", "salt", 2, 32, "ae4d0c95af6b46d32d0adff928f06dd02a303f8ef3c251dfd6e2d85a95474c43");
   _test_pbkdf2("password", "salt", 4096, 32, "c5e478d59288c841aa530db6845c4c8d962893a001ce4e11a4963873aa98134a");
