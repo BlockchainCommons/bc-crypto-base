@@ -5,6 +5,11 @@
 //  Licensed under the "BSD-2-Clause Plus Patent License"
 //
 
+// Arduino has two problems with the tests:
+// 1. The test-utils are duplicated w/ other Blockchain Commons packages.
+// 2. The main routine conflicts w/ the actual main.
+#if !defined(ARDUINO)
+
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
@@ -165,3 +170,5 @@ int main() {
   test_hmac();
   test_pbkdf2();
 }
+
+#endif // !defined(ARDUINO)
