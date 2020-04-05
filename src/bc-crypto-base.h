@@ -11,5 +11,7 @@
 #include "sha2.h"
 #include "hmac.h"
 #include "pbkdf2.h"
+#include "random.h"
+#include "hkdf.h"
 
 #endif // BC_CRYPTO_BASE_H

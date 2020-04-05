@@ -159,9 +159,130 @@ static void test_pbkdf2() {
   _test_pbkdf2_data((uint8_t*)"pass\0word", 9, (uint8_t*)"sa\0lt", 5, 4096, 16, "89b69d0516f829893c696226650a8687");
 }
 
+static bool _test_hkdf(const char* ikm, const char* salt, const char* info, const char* okm) {
+    uint8_t* ikm_data;
+    size_t ikm_len = hex_to_data(ikm, &ikm_data);
+
+    uint8_t* salt_data;
+    size_t salt_len = hex_to_data(salt, &salt_data);
+
+    uint8_t* info_data;
+    size_t info_len = hex_to_data(info, &info_data);
+
+    uint8_t* expected_okm_data;
+    size_t okm_len = hex_to_data(okm, &expected_okm_data);
+
+    uint8_t* okm_data = calloc(okm_len, sizeof(uint8_t));
+
+    hkdf_sha256(okm_data, okm_len,
+        salt_data, salt_len,
+        ikm_data, ikm_len,
+        info_data, info_len
+    );
+
+    bool result = equal_uint8_buffers(okm_data, okm_len, expected_okm_data, okm_len);
+
+    free(ikm_data);
+    free(salt_data);
+    free(info_data);
+    free(expected_okm_data);
+
+    return result;
+}
+
+// Test vectors from:
+// https://github.com/rustyrussell/ccan/blob/master/ccan/crypto/hkdf_sha256/test/api-rfc5869.c
+static void test_hkdf() {
+    char* ikm1 = "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b";
+    char* salt1 = "000102030405060708090a0b0c";
+    char* info1 = "f0f1f2f3f4f5f6f7f8f9";
+    char* okm1 = "3cb25f25faacd57a90434f64d0362f2a2d2d0a90cf1a5a4c5db02d56ecc4c5bf34007208d5b887185865";
+    assert(_test_hkdf(ikm1, salt1, info1, okm1));
+
+    char* ikm2 =
+    "000102030405060708090a0b0c0d0e0f"
+	"101112131415161718191a1b1c1d1e1f"
+	"202122232425262728292a2b2c2d2e2f"
+	"303132333435363738393a3b3c3d3e3f"
+	"404142434445464748494a4b4c4d4e4f";
+    char* salt2 =
+    "606162636465666768696a6b6c6d6e6f"
+	"707172737475767778797a7b7c7d7e7f"
+	"808182838485868788898a8b8c8d8e8f"
+	"909192939495969798999a9b9c9d9e9f"
+	"a0a1a2a3a4a5a6a7a8a9aaabacadaeaf";
+    char* info2 =
+    "b0b1b2b3b4b5b6b7b8b9babbbcbdbebf"
+	"c0c1c2c3c4c5c6c7c8c9cacbcccdcecf"
+	"d0d1d2d3d4d5d6d7d8d9dadbdcdddedf"
+	"e0e1e2e3e4e5e6e7e8e9eaebecedeeef"
+	"f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff";
+    char* okm2 =
+    "b11e398dc80327a1c8e7f78c596a4934"
+	"4f012eda2d4efad8a050cc4c19afa97c"
+	"59045a99cac7827271cb41c65e590e09"
+	"da3275600c2f09b8367793a9aca3db71"
+	"cc30c58179ec3e87c14c01d5c1f3434f"
+	"1d87";
+    assert(_test_hkdf(ikm2, salt2, info2, okm2));
+
+    char* ikm3 = "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b";
+    char* salt3 = "";
+    char* info3 = "";
+    char* okm3 = 
+    "8da4e775a563c18f715f802a063c5a31"
+	"b8a11f5c5ee1879ec3454e5f3c738d2d"
+	"9d201395faa4b61a96c8";
+    assert(_test_hkdf(ikm3, salt3, info3, okm3));
+}
+
+void _test_rng(void (*rng)(uint8_t*, size_t), void (*seeder)(const char*), uint8_t* digest) {
+    size_t buf_len = 100;
+    size_t iterations = 1000;
+    uint8_t buf1[buf_len];
+    uint8_t buf2[buf_len];
+
+    if (seeder != NULL) {
+        seeder("test");
+    }
+
+    rng(buf1, buf_len);
+
+    SHA256_CTX ctx;
+    sha256_Init(&ctx);
+    for(int i = 0; i < iterations; i++) {
+        sha256_Update(&ctx, buf1, buf_len);
+        memcpy(buf2, buf1, buf_len);
+        rng(buf1, buf_len);
+        assert(memcmp(buf1, buf2, buf_len) != 0);
+    }
+    uint8_t d[SHA256_DIGEST_LENGTH];
+    sha256_Final(&ctx, d);
+
+    if (digest != NULL) {
+        memcpy(digest, d, SHA256_DIGEST_LENGTH);
+    }
+}
+
+void _test_deterministic_rng(void (*rng)(uint8_t*, size_t), void (*seeder)(const char*)) {
+    uint8_t digest1[SHA256_DIGEST_LENGTH];
+    _test_rng(rng, seeder, digest1);
+    uint8_t digest2[SHA256_DIGEST_LENGTH];
+    _test_rng(rng, seeder, digest2);
+    assert(memcmp(digest1, digest2, SHA256_DIGEST_LENGTH) == 0);
+}
+
+void test_random() {
+    _test_rng(crypto_random, NULL, NULL);
+    _test_deterministic_rng(mersenne_twister_random, seed_mersenne_twister_string);
+    _test_deterministic_rng(deterministic_random, seed_deterministic_string);
+}
+
 int main() {
   test_hex();
   test_sha();
   test_hmac();
   test_pbkdf2();
+  test_hkdf();
+  test_random();
 }

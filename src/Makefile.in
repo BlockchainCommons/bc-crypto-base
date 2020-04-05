@@ -25,7 +25,7 @@ VPATH = @srcdir@
 CFLAGS = -g -O0
 ARFLAGS = rcs
 
-OBJS = memzero.o sha2.o hmac.o pbkdf2.o
+OBJS = memzero.o sha2.o hmac.o pbkdf2.o random.o randombytes.o mersenne-twister.o hkdf.o
 
 .PHONY: all lib
 all lib: $(libname)
@@ -37,8 +37,14 @@ memzero.o: memzero.h
 sha2.o: sha2.h memzero.h
 hmac.o: hmac.h sha2.h memzero.h options.h
 pbkdf2.o: pbkdf2.h sha2.h hmac.h memzero.h sha2.h
+random.o: random.h randombytes.h mersenne-twister.h sha2.h hkdf.h
+randombytes.o: randombytes.h
+mersenne-twister.o: mersenne-twister.h
+hkdf.o: hkdf.h hmac.h
 
-HEADERS = bc-crypto-base.h hmac.h memzero.h options.h pbkdf2.h sha2.h
+HEADERS = bc-crypto-base.h hmac.h memzero.h options.h \
+	pbkdf2.h sha2.h random.h randombytes.h \
+	mersenne-twister.h hkdf.h
 
 libdir = $(DESTDIR)/$(prefix)/lib
 includedir = $(DESTDIR)/$(prefix)/include/$(package)
@@ -59,6 +65,10 @@ uninstall:
 	rm -f $(includedir)/options.h
 	rm -f $(includedir)/pbkdf2.h
 	rm -f $(includedir)/sha2.h
+	rm -f $(includedir)/random.h
+	rm -f $(includedir)/randombytes.h
+	rm -f $(includedir)/mersenne-twister.h
+	rm -f $(includedir)/hkdf.h
 	-rmdir $(libdir) >/dev/null 2>&1
 	-rmdir $(includedir) >/dev/null 2>&1
 
