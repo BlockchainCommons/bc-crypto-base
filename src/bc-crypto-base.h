@@ -8,8 +8,16 @@
 #ifndef BC_CRYPTO_BASE_H
 #define BC_CRYPTO_BASE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "sha2.h"
 #include "hmac.h"
 #include "pbkdf2.h"
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // BC_CRYPTO_BASE_H
