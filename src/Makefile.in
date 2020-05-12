@@ -27,7 +27,7 @@ RED=`tput setaf 1`
 GREEN=`tput setaf 2`
 RESET=`tput sgr0`
 
-CFLAGS = -g -O0
+CFLAGS += -g -O0
 ARFLAGS = rcs
 
 OBJS = memzero.o sha2.o hmac.o pbkdf2.o
