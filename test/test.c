@@ -27,7 +27,6 @@ static bool _test_sha(const char* input, const char* expected_output, size_t dig
 // Test vectors: https://www.di-mgt.com.au/sha_testvectors.html
 static void test_sha() {
   char* input = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
-  assert(_test_sha(input, "84983e441c3bd26ebaae4aa1f95129e5e54670f1", SHA1_DIGEST_LENGTH, sha1_Raw));
   assert(_test_sha(input, "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1", SHA256_DIGEST_LENGTH, sha256_Raw));
   assert(_test_sha(input, "204a8fc6dda82f0a0ced7beb8e08a41657c16ef468b228a8279be331a703c33596fd15c13b1b07f9aa1d3bea57789ca031ad85c7a71dd70354ec631238ca3445", SHA512_DIGEST_LENGTH, sha512_Raw));
 }
