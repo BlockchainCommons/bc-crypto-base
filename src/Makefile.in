@@ -30,7 +30,7 @@ RESET=`tput sgr0`
 CFLAGS += -g -O0
 ARFLAGS = rcs
 
-OBJS = memzero.o sha2.o hmac.o pbkdf2.o
+OBJS = memzero.o sha2.o hmac.o pbkdf2.o crc32.o
 
 .PHONY: all lib
 all lib: $(libname)
@@ -42,8 +42,9 @@ memzero.o: memzero.h
 sha2.o: sha2.h memzero.h
 hmac.o: hmac.h sha2.h memzero.h options.h
 pbkdf2.o: pbkdf2.h sha2.h hmac.h memzero.h sha2.h
+crc32.o: crc32.h
 
-HEADERS = bc-crypto-base.h hmac.h memzero.h options.h pbkdf2.h sha2.h
+HEADERS = bc-crypto-base.h hmac.h memzero.h options.h pbkdf2.h sha2.h crc32.h
 
 libdir = $(DESTDIR)/$(prefix)/lib
 includedir = $(DESTDIR)/$(prefix)/include/$(package)
@@ -64,6 +65,7 @@ uninstall:
 	rm -f $(includedir)/options.h
 	rm -f $(includedir)/pbkdf2.h
 	rm -f $(includedir)/sha2.h
+	rm -f $(includedir)/crc32.h
 	-rmdir $(libdir) >/dev/null 2>&1
 	-rmdir $(includedir) >/dev/null 2>&1
 
