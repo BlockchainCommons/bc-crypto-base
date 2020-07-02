@@ -7,7 +7,12 @@
 
 #include "crc32.h"
 #include <memory.h>
+
+#ifdef ARDUINO
+#define htonl(x) __builtin_bswap32((uint32_t) (x))
+#else
 #include <arpa/inet.h>
+#endif
 
 uint32_t crc32(const uint8_t* bytes, size_t len) {
     static uint32_t* table = NULL;
