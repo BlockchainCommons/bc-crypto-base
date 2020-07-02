@@ -10,10 +10,10 @@
 #include <string.h>
 #include <assert.h>
 
-char* data_to_hex(uint8_t* in, size_t insz)
+char* data_to_hex(const uint8_t* in, size_t insz)
 {
   char* out = malloc(insz * 2 + 1);
-  uint8_t* pin = in;
+  const uint8_t* pin = in;
   const char * hex = "0123456789abcdef";
   char* pout = out;
   for(; pin < in + insz; pout += 2, pin++){

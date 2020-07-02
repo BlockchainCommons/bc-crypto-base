@@ -110,3 +110,13 @@ The following keys may be used to communicate sensitive information to developer
 | Christopher Allen | FDFE 14A5 4ECB 30FC 5D22  74EF F8D3 6C91 3574 05ED |
 
 You can import a key by running the following command with that individual’s fingerprint: `gpg --recv-keys "<fingerprint>"` Ensure that you put quotes around fingerprints that contain spaces.
+
+## Version History
+
+### 0.2.0, 7/1/2020
+
+* Added functions for computing CRC-32 checksums.
+
+### 0.1.0, 5/19/2020
+
+* Initial release.

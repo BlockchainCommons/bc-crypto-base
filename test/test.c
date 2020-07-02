@@ -158,9 +158,19 @@ static void test_pbkdf2() {
   _test_pbkdf2_data((uint8_t*)"pass\0word", 9, (uint8_t*)"sa\0lt", 5, 4096, 16, "89b69d0516f829893c696226650a8687");
 }
 
+static void test_crc32() {
+    char* input = "Hello, world!";
+    size_t input_len = strlen(input);
+    uint32_t checksum = crc32n((const uint8_t *)input, input_len);
+    char* hex = data_to_hex((uint8_t *)&checksum, sizeof(uint32_t));
+    char* expected_hex = "ebe6c6e6";
+    assert(equal_strings(hex, expected_hex));
+}
+
 int main() {
   test_hex();
   test_sha();
   test_hmac();
   test_pbkdf2();
+  test_crc32();
 }
