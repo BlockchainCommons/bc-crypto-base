@@ -30,6 +30,12 @@ RESET=`tput sgr0`
 CFLAGS += -g -O0
 ARFLAGS = rcs
 
+UNAME := $(shell uname)
+ifeq ($(findstring MINGW64, $(UNAME)), MINGW64)
+# on windows building with msys2/mingw64
+LDLIBS += -lws2_32
+endif
+
 OBJS = memzero.o sha2.o hmac.o pbkdf2.o crc32.o
 
 .PHONY: all lib
@@ -46,8 +52,8 @@ crc32.o: crc32.h
 
 HEADERS = bc-crypto-base.h hmac.h memzero.h options.h pbkdf2.h sha2.h crc32.h
 
-libdir = $(DESTDIR)/$(prefix)/lib
-includedir = $(DESTDIR)/$(prefix)/include/$(package)
+libdir = $(DESTDIR)$(prefix)/lib
+includedir = $(DESTDIR)$(prefix)/include/$(package)
 
 .PHONY: install
 install: $(libname)

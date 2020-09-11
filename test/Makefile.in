@@ -29,6 +29,12 @@ RESET=`tput sgr0`
 
 CFLAGS += -g -O0
 
+UNAME := $(shell uname)
+ifeq ($(findstring MINGW64, $(UNAME)), MINGW64)
+# on windows building with msys2/mingw64
+LDLIBS += -lws2_32
+endif
+
 .PHONY: all
 all: test
 
