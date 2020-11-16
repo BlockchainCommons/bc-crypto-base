@@ -1,0 +1,20 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  build-MacOS:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: ./configure
+    - run: make check
+    - run: sudo make install
+    - run: make distcheck && make distclean
+
+  build-Linux:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - run: ./configure && make check
+    - run: sudo make install
+    - run: make distcheck && make distclean
+
