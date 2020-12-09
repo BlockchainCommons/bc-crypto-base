@@ -1,10 +1,12 @@
 # [Blockchain Commons Crypto Base](https://github.com/BlockchainCommons/bc-crypto-base)
 
+### _by Wolf McNally and Christopher Allen_
+
 **Well-Reviewed and Audited Cryptographic Functions for Use in [Blockchain Commons](https://www.BlockchainCommons.com)  Software Projects**
 
 These are selected cryptographic functions used by various [Blockchain Commons](https://www.BlockchainCommons.com) software projects that have have been vetted by the developers as having been sufficiently well-reviewed and/or cryptographically audited by other parties, but also meet our specific needs (for instance to be able to run on embedded hardware).
 
-## Installation
+## Installation Instructions
 
 ```bash
 $ ./configure
@@ -14,7 +16,7 @@ $ sudo make install
 
 This sequence runs the module's unit tests.
 
-## Use
+## Usage Instructions
 
 1. Link against `libbc-crypto-base.a`.
 2. Include the umbrella header in your code:
