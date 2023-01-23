@@ -2,6 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
+AC_CONFIG_AUX_DIR([/usr/share/autoconf/build-aux])
 AC_INIT([bc-crypto-base], [0.3])
 AC_CONFIG_SRCDIR([src/sha2.c])
 AC_CONFIG_HEADERS([config.h])
