@@ -1,0 +1,19 @@
+Source: bc-crypto-base
+Section: unknown
+Priority: optional
+Maintainer: Wolf McNally <Wolf@WolfMcNally.com>
+Rules-Requires-Root: no
+Build-Depends:
+ debhelper-compat (= 13),
+Standards-Version: 4.6.1
+Homepage: http://github.com/BlockchainCommons/bc-crypto-base
+#Vcs-Browser: https://salsa.debian.org/debian/bc-crypto-base
+Vcs-Git: git@github.com:BlockchainCommons/bc-crypto-base.git
+
+Package: bc-crypto-base
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+Description: Cryptographic functions used by various Blockchain Commons software projects.
+ Selected cryptographic functions that have have been vetted by BlockchainCommons as having been sufficiently well-reviewed and/or cryptographically audited by other parties, but also meet our specific needs (for instance to be able to run on embedded hardware).
